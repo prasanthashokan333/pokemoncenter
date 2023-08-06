@@ -6,6 +6,12 @@ import os
 import glob
 from datetime import datetime
 import pandas as pd
+username='prasanth'
+password='83f799-3821f9-837e75-2560c3-c63db3'
+proxy = {
+    'http': 'http://'+username+':'+password+'@global.rotating.proxyrack.net:9000',
+    'https': 'http://'+username+':'+password+'@global.rotating.proxyrack.net:9000'
+}
 current_date = datetime.now().strftime('%d-%m-%Y')
 folder_name =f"jsons//{current_date}"
 json_path = f"{folder_name}"
@@ -39,12 +45,12 @@ for url in urls:
             'p_cd': f'{p_cd}',
         }
         print(product_index,product_url)
-        response = requests.get('https://www.pokemoncenter-online.com/', params=params, headers=headers)
+        response = requests.get('https://www.pokemoncenter-online.com/', params=params, headers=headers,proxies = proxy)
         if response.status_code!=200:
             print("server down , so sleep for 5 minutes")
             print(response.text)
             time.sleep(300)
-            response = requests.get('https://www.pokemoncenter-online.com/', params=params, headers=headers)
+            response = requests.get('https://www.pokemoncenter-online.com/', params=params, headers=headers,proxies = proxy)
         
         parser = etree.HTMLParser()
         tree = etree.fromstring(response.content, parser)
@@ -68,7 +74,7 @@ for url in urls:
             data['have_stock'] = True if len(product_details.xpath('//article//img[@class="add_cart_btn"]'))==1 else False  
         with open(file_path, 'w') as json_file:
             json.dump(data, json_file)
-        time.sleep(1)
+        time.sleep(10)
     else:
         print("Already completed",product_index,product_url)
 
